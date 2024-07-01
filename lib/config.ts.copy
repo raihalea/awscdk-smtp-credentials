@@ -1,0 +1,8 @@
+export interface DomainConfig {
+  DOMAIN_NAME: string;
+  MAIL: string;
+}
+export const domainConfig:DomainConfig = {
+  DOMAIN_NAME: 'example.com',
+  MAIL: 'mail',
+};
