@@ -1,3 +1,10 @@
+import { Environment } from 'aws-cdk-lib';
+
+export const awsConfig: Environment = {
+  account: '123456789012',
+  region: 'us-east-1',
+};
+
 export interface DomainConfig {
   DOMAIN_NAME: string;
   MAIL: string;
