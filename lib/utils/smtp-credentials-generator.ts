@@ -2,6 +2,8 @@ import { CustomResource, Duration } from 'aws-cdk-lib';
 import {
   User,
   AccessKey,
+  Effect,
+  PolicyStatement
 } from 'aws-cdk-lib/aws-iam';
 import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -51,18 +53,18 @@ export class SmtpCredentialsGenerator extends Construct {
       logRetention: RetentionDays.ONE_DAY,
     });
 
-    this.smtpSecretAccessKey.grantWrite(onEvent);
+    this.smtpSecretAccessKey.grantWrite(onEvent)
+    this.smtpSecretAccessKey.grantRead(onEvent)
 
-    const now = new Date();
-    const threeHoursLater = new Date(now.getTime() + 3 * 60 * 60 * 1000);
-    this.smtpSecretAccessKey.grantRead(onEvent).principalStatements.forEach((statement) => {
-      statement.addConditions(
-        {
-          DateGreaterThan: { 'aws:CurrentTime': now.toISOString() },
-          DateLessThan: { 'aws:CurrentTime': threeHoursLater.toISOString() },
-        },
-      );
-    });
+    const expirationTime = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
+    onEvent.addToRolePolicy(new PolicyStatement({
+      effect: Effect.DENY,
+      actions: ['*'],
+      resources: ['*'],
+      conditions: {
+        DateGreaterThan: { 'aws:CurrentTime': expirationTime },
+      },
+    }));
 
     const smtpSecretProvider = new Provider(this, 'SmtpSecretProvider', {
       onEventHandler: onEvent,
