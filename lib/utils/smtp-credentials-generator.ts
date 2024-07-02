@@ -40,7 +40,7 @@ export class SmtpCredentialsGenerator extends Construct {
     const onEvent = new Function(this, 'SmtpCredentialsGenerator', {
       runtime: Runtime.PYTHON_3_12,
       architecture: Architecture.ARM_64,
-      code: Code.fromAsset('lib/lambda/smtp_credentials_generate/smtp_credentials_generate.py'),
+      code: Code.fromAsset('lib/lambda/smtp_credentials_generate'),
       handler: 'smtp_credentials_generate.handler',
       environment: {
         SECRET_ARN: this.smtpSecretAccessKey.secretArn,
